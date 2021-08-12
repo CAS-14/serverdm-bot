@@ -1,6 +1,7 @@
 # bot.py
 import os
 import random
+from datetime import datetime
 
 from dotenv import load_dotenv
 from discord import *
@@ -31,12 +32,9 @@ testServers = [738488607261851748,
                674791516249653277]
 
 bot_owners  = [642527833410895882]
-
 bot_masters = [642527833410895882]
 
-@bot.command(name='senkobread')
-async def senko(ctx):
-    await ctx.send("https://cdn.discordapp.com/emojis/795829520162357298.png?v=1")
+forward_servers = [674791516249653277]
 
 @bot.command(name='embedtest')
 async def embedtest(ctx):
@@ -44,36 +42,24 @@ async def embedtest(ctx):
     testembed = Embed(title="Test Title",description="Test Description",color=colorcode)
     await ctx.send(embed=testembed)
 
-@bot.command(name='botactivity')
-async def changeactivity(ctx, *args):
-    if ctx.author.id in bot_masters:
-        args = list(args)
-        # await ctx.send(args)
-        try:
-            status_type = args[0]
-            new_status = ' '.join(args[1:])
-        except:
-            await ctx.send(embed=Embed(title="Error",description=f"Not enough arguments\n\nProper command format: `{prefix}botactivity <status type> <status>`\nStatus type: `playing`, `streaming`, `listening`, `watching`", color=0xff0000))
-        else:
-            if len(args) > 1:
-                if status_type == "playing":
-                    await bot.change_presence(activity=Game(name=new_status))
-                    await ctx.send(embed=Embed(title="Success",description=f"Activity successfully changed to \"Playing {new_status}\".", color=0x00ff00))
-                elif status_type == "streaming":
-                    await bot.change_presence(activity=Streaming(name=new_status, url="https://google.com"))
-                    await ctx.send(embed=Embed(title="Success",description=f"Activity successfully changed to \"Streaming {new_status}\".", color=0x00ff00))
-                elif status_type == "listening":
-                    await bot.change_presence(activity=Activity(type=ActivityType.listening, name=new_status))
-                    await ctx.send(embed=Embed(title="Success",description=f"Activity successfully changed to \"Listening to {new_status}\".", color=0x00ff00))
-                elif status_type == "watching":
-                    await bot.change_presence(activity=Activity(type=ActivityType.watching, name=new_status))
-                    await ctx.send(embed=Embed(title="Success",description=f"Activity successfully changed to \"Watching {new_status}\".", color=0x00ff00))
-                else:
-                    await ctx.send(embed=Embed(title="Error",description=f"Improper arguments\n\nProper command format: `{prefix}botactivity <status type> <status>`\nStatus type: `playing`, `streaming`, `listening`, `watching`", color=0xff0000))
-            else:
-                await ctx.send(embed=Embed(title="Error",description=f"Not enough arguments\n\nProper command format: `{prefix}botactivity <status type> <status>`\nStatus type: `playing`, `streaming`, `listening`, `watching`", color=0xff0000))
-            
+@client.event
+async def on_message(message):
+    guild = message.guild
+    log_channel = utils.get(guild.channels, name="log-test")
+    if log_channel is None:
+        await client.process_commands(message)
+        return
     else:
-        await ctx.send(":x: Access denied. You must be a **Bot Master** to use this command.")
+        embed=Embed(
+            color=0xffd700,
+            timestamp=datetime.utcnow(),
+            description="in {}:\n{}".format(message.channel.mention, message.content)
+        )
+        embed.set_author(name=message.author, icon_url=message.author.avatar_url)
+        embed.set_footer(text=message.author.id)
+        if len(message.attachments) > 0:
+            embed.set_image(url = message.attachments[0].url)
+        await log_channel.send(embed=embed)
+        await client.process_commands(message)
 
 bot.run(TOKEN)
