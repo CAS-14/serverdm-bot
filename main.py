@@ -2,16 +2,16 @@
 import os
 import random
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from discord import *
 from discord.ext import commands
 
 # from discord_slash import SlashCommand
 # from discord_slash.utils.manage_commands import create_option
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-# TOKEN = "MANUAL OVERRIDE"
+# load_dotenv()
+# TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = 'ODc1MTg0NjIxMzI5OTkzNzU4.YRR1MQ.EK4W-BPbUZjs9gprxyYG3qLdWeA'
 
 prefix = 'd!'
 gameStatus = ""
